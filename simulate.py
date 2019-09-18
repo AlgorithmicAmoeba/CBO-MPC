@@ -5,10 +5,11 @@ import utils
 import numpy
 import cvxpy
 import matplotlib.pyplot as plt
+import tqdm
 
 # Slightly adapted from  H/W assignment 9
 num = [[[-0.045], [-0.048]], [[-0.23], [0.55]]]
-den = [[[8.1, 1], [11, 1]], [[8.1, 1], [10, 1]]]  # [[[8.1, 1], [11, 1]], [[8.1, 1], [10, 1]]]
+den = [[[1, -4, 5], [11, 1]], [[8.1, 1], [10, 1]]]  # [[[8.1, 1], [11, 1]], [[8.1, 1], [10, 1]]]
 delay = [[0.5, 0.5], [1.5, 0.5]]
 G = utils.InternalDelay.from_tf_coefficients(num, den, delay)
 
@@ -29,7 +30,7 @@ mpc = ModelPredictiveController.ModelPredictiveController(sm, Ysp=Ysp, dU_max=10
 pm = PlantModel.PlantModel(G)
 
 # Simulation setup
-t_end = 50
+t_end = 30
 tsim = numpy.linspace(0, t_end, t_end*5)
 dt_sim = tsim[1]
 ys = []
@@ -41,7 +42,7 @@ t_next_control = dt_control
 us.append(mpc.step([0, 0]))
 ys.append(pm.step(us[-1], dt_sim))
 
-for t in tsim[1:]:
+for t in tqdm.tqdm(tsim[1:]):
     if t < t_next_control:
         du = mpc.step(ys[-1])
         us.append(us[-1] + du)
@@ -49,6 +50,7 @@ for t in tsim[1:]:
     else:
         us.append(us[-1])
     ys.append(pm.step(us[-1], dt_sim))
+
 
 plt.plot(tsim, ys)
 plt.show()
