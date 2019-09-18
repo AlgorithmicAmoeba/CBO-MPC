@@ -27,19 +27,17 @@ class ModelPredictiveController:
 
         self.R = numpy.diag(R)
 
-        if dU_max is None:
-            dU_max = 1e20
-
+        self.cons = []
         self.dU_max = dU_max
-
-        if E_max is None:
-            E_max = 1e20
+        if dU_max is not None:
+            self.cons.append(cvxpy.abs(self.dU) <= self.dU_max)
 
         self.E_max = E_max
+        if E_max is not None:
+            self.cons.append(cvxpy.abs(self.E) <= self.E_max)
 
         self.J = cvxpy.quad_form(self.E, self.Q) + cvxpy.quad_form(self.dU, self.R)
         self.obj = cvxpy.Minimize(self.J)
-        self.cons = [cvxpy.abs(self.dU) <= self.dU_max, cvxpy.abs(self.E) <= self.E_max]
         self.prob = cvxpy.Problem(self.obj, self.cons)
         self.prob.solve(solver='MOSEK')
 
@@ -58,9 +56,14 @@ class ModelPredictiveController:
         self.E = self.Ysp - self.Y
         self.J = cvxpy.quad_form(self.E, self.Q) + cvxpy.quad_form(self.dU, self.R)
         self.obj = cvxpy.Minimize(self.J)
-        self.cons = [cvxpy.abs(self.dU) <= self.dU_max, cvxpy.abs(self.E) <= self.E_max]
+        self.cons = []
+        if self.dU_max is not None:
+            self.cons.append(cvxpy.abs(self.dU) <= self.dU_max)
 
-        kwargs = {'solver': 'MOSEK', 'warm_start': True, 'parallel': True}
+        if self.E_max is not None:
+            self.cons.append(cvxpy.abs(self.E) <= self.E_max)
+
+        kwargs = {'solver': 'OSQP', 'warm_start': True, 'parallel': True, 'qcp': True}
         try:
             self.prob = cvxpy.Problem(self.obj, self.cons)
             self.prob.solve(**kwargs)
