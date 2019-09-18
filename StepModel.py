@@ -47,7 +47,7 @@ class StepModel:
 
             for out_i in range(self.outs):
                 yi = ys[:, out_i][ind]
-                largest = 1e5
+                largest = 1e10
                 yi[yi > largest] = largest
                 yi[yi < -largest] = -largest
                 y_steps[out_i][in_i] = yi
