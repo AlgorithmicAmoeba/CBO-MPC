@@ -16,26 +16,26 @@ class StepModel:
 
         self.__make_step_coeffs()
         self.__make_step_matrix()
+        self.__make_Y0_matrix()
 
         self.Y0 = numpy.zeros(self.A.shape[0])
+        self._dUs = [numpy.zeros(self.ins)] * N
+        self._dU_old_tot = numpy.zeros(self.ins)
 
     def step_Y0(self, dU):  # Untested. Will test with MPC implementation
-        Im = numpy.eye(self.outs)
-        M_siso = numpy.eye(self.P, k=1)
-        M_siso[self.P - 1][self.P - 1] = 1
-        M = numpy.kron(Im, M_siso)
-
-        A_star = self.A[:, ::self.M]
-
-        self.Y0 = M @ self.Y0 + A_star @ dU
+        self._dUs.append(dU)
+        dUs_dyn = numpy.array(self._dUs[-self.N:]).T.flatten()
+        self._dU_old_tot += self._dUs[-self.N-1]
+        y_old_tot = self.y_steps[:, :, -1] @ self._dU_old_tot
+        self.Y0 = self.C @ dUs_dyn + y_old_tot.repeat(self.P)
 
     def reset(self):
         self.Y0 = numpy.zeros(self.A.shape[0])
 
     def __make_step_coeffs(self):
-        t = self.N * self.dt
+        t = (self.N+1) * self.dt
         ts = numpy.linspace(0, t, int(t * 100))
-        t_step = numpy.arange(0, t, self.dt)
+        t_step = numpy.arange(self.dt, t, self.dt)
         ind = numpy.searchsorted(ts, t_step)
         y_steps = numpy.zeros_like(self.G.D11).tolist()
 
@@ -91,3 +91,15 @@ class StepModel:
                 Bs[out_i][in_i] = scipy.linalg.toeplitz(cols[out_i][in_i], rows[out_i][in_i]) * dys[out_i][in_i]
 
         self.B = numpy.block(Bs)
+
+    def __make_Y0_matrix(self):
+        rows = numpy.insert(self.y_steps[:, :, 1:], -1, self.y_steps[:, :, -1], axis=2)
+        rows = numpy.flip(rows, axis=2)
+        cols = numpy.repeat(self.y_steps[:, :, -1][:, :, numpy.newaxis], self.P, axis=2)
+        Cs = numpy.zeros_like(self.G.D11).tolist()
+
+        for in_i in range(self.ins):
+            for out_i in range(self.outs):
+                Cs[out_i][in_i] = scipy.linalg.toeplitz(cols[out_i][in_i], rows[out_i][in_i])
+
+        self.C = numpy.block(Cs)
