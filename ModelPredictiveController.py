@@ -39,9 +39,9 @@ class ModelPredictiveController:
         self.J = cvxpy.quad_form(self.E, self.Q) + cvxpy.quad_form(self.dU, self.R)
         self.obj = cvxpy.Minimize(self.J)
         self.prob = cvxpy.Problem(self.obj, self.cons)
-        self.prob.solve(solver='MOSEK')
+        self.prob.solve(solver='OSQP')
 
-        self.bias = None
+        self.bias = numpy.full(SM.P * SM.outs, 0)
 
         self.K = numpy.linalg.inv(SM.A.T @ self.Q @ SM.A + self.R) @ SM.A.T @ self.Q
 
