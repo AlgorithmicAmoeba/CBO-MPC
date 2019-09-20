@@ -14,13 +14,14 @@ delay = [[0.5, 0.5], [1.5, 0.5]]
 G = utils.InternalDelay.from_tf_coefficients(num, den, delay)
 
 # Parameters
-N = 50
+T = 70
 dt_model = 1
-M = 20
-P = M+N
+N = int(T/dt_model)
+M = 2
+P = 4
 
 # Step model setup
-sm = StepModel.StepModel(G, dt_model, N, P, M)
+sm = StepModel.StepModel(G, dt_model, N, P, M, integrators=False)
 
 
 # MPC setup
@@ -32,18 +33,18 @@ def Ysp_fun(t):
     return ans.repeat(P)
 
 
-Q = numpy.append(numpy.full(sm.P, 1), numpy.full(sm.P, 1))
+Q = numpy.append(numpy.full(sm.P, 100), numpy.full(sm.P, 100))
 R = numpy.append(numpy.full(sm.M, 1), numpy.full(sm.M, 1))
 
 Ysp = Ysp_fun(0)
-mpc = ModelPredictiveController.ModelPredictiveController(sm, Ysp=Ysp, Q=Q, R=R, dU_max=10, E_max=10)
+mpc = ModelPredictiveController.ModelPredictiveController(sm, Ysp=Ysp, Q=Q, R=R)
 
 # Plant model setup
 pm = PlantModel.PlantModel(G)
 
 # Simulation setup
 t_end = 100
-tsim = numpy.linspace(0, t_end, t_end*5)
+tsim = numpy.linspace(0, t_end, t_end*10)
 dt_sim = tsim[1]
 ys = []
 us = []
@@ -63,14 +64,14 @@ if live_plot:
 
 # Simulate
 for t in tqdm.tqdm(tsim[1:]):
-    if t < t_next_control:
+    ys.append(pm.step(us[-1], dt_sim))
+    ysp.append(Ysp_fun(t)[::P])
+    if t > t_next_control:
         du = mpc.step(ys[-1], Ysp_fun(t))
         us.append(us[-1] + du)
         t_next_control += dt_control
     else:
         us.append(us[-1])
-    ys.append(pm.step(us[-1], dt_sim))
-    ysp.append(Ysp_fun(t)[::P])
 
     if live_plot:
         x_data = tsim[tsim <= t]
