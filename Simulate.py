@@ -37,7 +37,7 @@ class SimulateMPC:
             dt_control = self.dt_model
         t_next_control = dt_control
 
-        us.append(self.MPC.step([0, 0]))
+        us.append(self.MPC.step([0]*self.SM.ins))
         ys.append(self.PM.step(us[-1], dt_sim))
         ysp.append(Ysp(0)[::self.P])
 
@@ -82,7 +82,7 @@ class SimulateMPC:
         data = numpy.concatenate([numpy.array(d) for d in [t_sim[:, numpy.newaxis], us, ys, ysp]], axis=1)
         cols = ['ts'] + [f"{name}_{i+1}" for name in ['u', 'y', 'r'] for i in range(self.SM.ins)]
         df = pandas.DataFrame(data, columns=cols)
-        
+
         if save_data != '':
             df.to_csv(save_data + '.csv', index=False)
 
