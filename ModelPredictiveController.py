@@ -50,6 +50,7 @@ class ModelPredictiveController:
         if Ysp is not None:
             self.Ysp = Ysp
 
+        self.Y = self.SM.A @ self.dU + self.SM.Y0
         self.bias = numpy.repeat(Y_actual - self.Y.value[::self.SM.P], self.SM.P)
 
         self.Y = self.SM.A @ self.dU + self.SM.Y0 + self.bias
