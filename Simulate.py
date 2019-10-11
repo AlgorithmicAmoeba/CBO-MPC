@@ -43,7 +43,7 @@ class SimulateMPC:
             dt_control = self.dt_model
         t_next_control = dt_control
 
-        us.append(self.MPC.step([0]*self.SM.ins))
+        us.append(self.MPC.step([0] * self.SM.ins))
 
         u_pm = list(us[-1]) + list(Udv(0))
         ys.append(self.PM.step(u_pm, dt_sim))
