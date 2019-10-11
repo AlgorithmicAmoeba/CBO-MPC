@@ -44,6 +44,7 @@ class SimulateMPC:
         if dt_control is None:
             dt_control = self.dt_model
         t_next_control = dt_control
+        dv_prev_control = numpy.zeros(self.dvs)
 
         us.append(self.MPC.step([0] * self.SM.outs))
 
@@ -59,18 +60,23 @@ class SimulateMPC:
         # Simulate
         t_sim_iter = tqdm.tqdm(t_sim[1:]) if show_tqdm else t_sim[1:]
         for t in t_sim_iter:
-            u_pm = list(us[-1]) + list(Udv(t))
+            dv = Udv(t)
+            u_pm = list(us[-1]) + list(dv)
             ys.append(self.PM.step(u_pm, dt_sim))
             ysp.append(Ysp(t))
             if t > t_next_control:
-                du = self.MPC.step(ys[-1], Ysp(t))
+                dDV = list(dv_prev_control - dv)[self.known_dvs:] + [0]*(self.dvs - self.known_dvs)
+
+                du = self.MPC.step(ys[-1], Ysp(t), dDVs=dDV)
                 us.append(us[-1] + du)
+
                 t_next_control += dt_control
+                dv_prev_control = dv
             else:
                 us.append(us[-1])
 
             if self.SM.dvs:
-                dvs.append(Udv(0))
+                dvs.append(dv)
 
             if live_plot:
                 t_sim_trunc = t_sim[t_sim <= t]
