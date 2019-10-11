@@ -11,7 +11,7 @@ import pandas
 class SimulateMPC:
     def __init__(self, G: utils.InternalDelay, N, M, P, dt_model,
                  Q=None, R=None, integrators=True,
-                 Gpm: utils.InternalDelay = None):
+                 Ndm=0, Ndv=0):
         self.G = G
         self.N = N
         self.M = M
@@ -19,7 +19,8 @@ class SimulateMPC:
         self.dt_model = dt_model
         self.Q = Q
         self.R = R
-        self.Gpm = Gpm
+        self.Ndm = Ndm
+        self.Ndv = Ndv
 
         # Step model
         self.SM = StepModel.StepModel(G, dt_model, N, P, M, integrators=integrators)
@@ -28,13 +29,10 @@ class SimulateMPC:
         self.MPC = ModelPredictiveController.ModelPredictiveController(self.SM, Q=Q, R=R)
 
         # Plant model
-        if Gpm is None:
-            self.PM = PlantModel.PlantModel(G)
-        else:
-            self.PM = PlantModel.PlantModel(Gpm)
+        self.PM = PlantModel.PlantModel(G)
 
     def simulate(self, Ysp, t_sim,
-                 dt_control=None, Upm=lambda t: [],
+                 dt_control=None, Udv=lambda t: [],
                  show_tqdm=True, live_plot=False, save_data=''):
         dt_sim = t_sim[1]
         ys = []
@@ -47,7 +45,7 @@ class SimulateMPC:
 
         us.append(self.MPC.step([0]*self.SM.ins))
 
-        u_pm = list(us[-1]) + list(Upm(0))
+        u_pm = list(us[-1]) + list(Udv(0))
         ys.append(self.PM.step(u_pm, dt_sim))
         ysp.append(Ysp(0)[::self.P])
 
@@ -57,7 +55,7 @@ class SimulateMPC:
         # Simulate
         t_sim_iter = tqdm.tqdm(t_sim[1:]) if show_tqdm else t_sim[1:]
         for t in t_sim_iter:
-            u_pm = list(us[-1]) + list(Upm(t))
+            u_pm = list(us[-1]) + list(Udv(t))
             ys.append(self.PM.step(u_pm, dt_sim))
             ysp.append(Ysp(t)[::self.P])
             if t > t_next_control:
