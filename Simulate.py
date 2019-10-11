@@ -19,7 +19,7 @@ class SimulateMPC:
         self.dt_model = dt_model
         self.Q = Q
         self.R = R
-        self.Ndv = dvs
+        self.dvs = dvs
         self.known_dvs = known_dvs
 
         # Step model
