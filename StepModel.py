@@ -38,6 +38,7 @@ class StepModel:
         t_step = numpy.arange(self.dt, t, self.dt)
         ind = numpy.searchsorted(ts, t_step)
         y_steps = numpy.zeros_like(self.G.D11).tolist()
+        assert isinstance(y_steps, list)
 
         for in_i in range(self.ins):
             def uf(ti):
@@ -79,6 +80,7 @@ class StepModel:
         rows = numpy.zeros((self.outs, self.ins, self.M))
 
         Bs = numpy.zeros_like(self.G.D11).tolist()
+        assert isinstance(Bs, list)
 
         for in_i in range(self.ins):
             for out_i in range(self.outs):
@@ -94,6 +96,7 @@ class StepModel:
 
     def __mimo_toeplitz(self, rows, cols):
         As = numpy.zeros_like(self.G.D11).tolist()
+        assert isinstance(As, list)
 
         for in_i in range(self.ins):
             for out_i in range(self.outs):
