@@ -96,7 +96,7 @@ class SimulateMPC:
 
         data = numpy.concatenate([numpy.array(d) for d in [t_sim[:, numpy.newaxis], us, dvs, ys, ysp]], axis=1)
         cols = ['ts']
-        cols += [f"u_{i+1}"  for i in range(self.SM.mvs)]
+        cols += [f"u_{i+1}" for i in range(self.SM.mvs)]
         cols += [f"dv_{i + 1}" for i in range(self.SM.dvs)]
         cols += [f"y_{i + 1}" for i in range(self.SM.outs)]
         cols += [f"r_{i + 1}" for i in range(self.SM.outs)]

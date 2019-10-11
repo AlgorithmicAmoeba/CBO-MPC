@@ -3,12 +3,7 @@ import plotting
 import utils
 import numpy
 
-# Slightly adapted from  H/W assignment 9
-num = [[[-0.045], [-0.048]], [[-0.23], [0.55]]]
-den = [[[8.1, 1], [11, 1]], [[8.1, 1], [10, 1]]]
-delay = [[0.5, 0.5], [1.5, 0.5]]
-G = utils.InternalDelay.from_tf_coefficients(num, den, delay)
-
+# Slightly adapted from  H/W assignment 9: includes DV
 num = [[[-0.045], [-0.048], [0.004]], [[-0.23], [0.55], [-0.65]]]
 den = [[[8.1, 1], [11, 1], [8.5, 1]], [[8.1, 1], [10, 1], [9.2, 1]]]
 delay = [[0.5, 0.5, 1], [1.5, 0.5, 1]]
