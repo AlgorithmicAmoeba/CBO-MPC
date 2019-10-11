@@ -11,7 +11,7 @@ import pandas
 class SimulateMPC:
     def __init__(self, G: utils.InternalDelay, N, M, P, dt_model,
                  Q=None, R=None, integrators=True,
-                 Ndm=0, Ndv=0):
+                 dvs=0, known_dvs=0):
         self.G = G
         self.N = N
         self.M = M
@@ -19,11 +19,11 @@ class SimulateMPC:
         self.dt_model = dt_model
         self.Q = Q
         self.R = R
-        self.Ndm = Ndm
-        self.Ndv = Ndv
+        self.Ndv = dvs
+        self.known_dvs = known_dvs
 
         # Step model
-        self.SM = StepModel.StepModel(G, dt_model, N, P, M, integrators=integrators, dvs=1)
+        self.SM = StepModel.StepModel(G, dt_model, N, P, M, integrators=integrators, dvs=dvs)
 
         # MPC
         self.MPC = ModelPredictiveController.ModelPredictiveController(self.SM, Q=Q, R=R)
