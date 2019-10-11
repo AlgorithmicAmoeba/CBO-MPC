@@ -22,7 +22,7 @@ class StepModel:
         self._dUs = [numpy.zeros(self.ins)] * N
         self._dU_old_tot = numpy.zeros(self.ins)
 
-    def step_Y0(self, dU):  # Untested. Will test with MPC implementation
+    def step_Y0(self, dU):
         self._dUs.append(dU)
         dUs_dyn = numpy.array(self._dUs[-self.N:]).T.flatten()
         self._dU_old_tot += self._dUs[-self.N-1]
