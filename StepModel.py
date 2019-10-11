@@ -62,13 +62,7 @@ class StepModel:
             cols = numpy.append(self.y_steps, a, axis=2)
 
         rows = numpy.append(self.y_steps[:, :, :1], numpy.zeros((self.outs, self.ins, self.M - 1)), axis=2)
-        As = numpy.zeros_like(self.G.D11).tolist()
-
-        for in_i in range(self.ins):
-            for out_i in range(self.outs):
-                As[out_i][in_i] = scipy.linalg.toeplitz(cols[out_i][in_i], rows[out_i][in_i])
-
-        self.A = numpy.block(As)
+        self.A = self.__mimo_toeplitz(rows, cols)
 
         if self.integrators:
             self.__make_integrators_matrix()
@@ -96,10 +90,14 @@ class StepModel:
         rows = numpy.insert(self.y_steps[:, :, 1:], -1, self.y_steps[:, :, -1], axis=2)
         rows = numpy.flip(rows, axis=2)
         cols = numpy.repeat(self.y_steps[:, :, -1][:, :, numpy.newaxis], self.P, axis=2)
-        Cs = numpy.zeros_like(self.G.D11).tolist()
+        self.C = self.__mimo_toeplitz(rows, cols)
+
+    def __mimo_toeplitz(self, rows, cols):
+        As = numpy.zeros_like(self.G.D11).tolist()
 
         for in_i in range(self.ins):
             for out_i in range(self.outs):
-                Cs[out_i][in_i] = scipy.linalg.toeplitz(cols[out_i][in_i], rows[out_i][in_i])
+                As[out_i][in_i] = scipy.linalg.toeplitz(cols[out_i][in_i], rows[out_i][in_i])
 
-        self.C = numpy.block(Cs)
+        A = numpy.block(As)
+        return A
