@@ -65,9 +65,9 @@ class SimulateMPC:
             ys.append(self.PM.step(u_pm, dt_sim))
             ysp.append(Ysp(t))
             if t > t_next_control:
-                dDV = list(dv_prev_control - dv)[self.known_dvs:] + [0]*(self.dvs - self.known_dvs)
+                dDV = list(dv - dv_prev_control)[:self.known_dvs] + [0]*(self.dvs - self.known_dvs)
 
-                du = self.MPC.step(ys[-1], Ysp(t), dDVs=dDV)
+                du = self.MPC.step(ys[-1], Ysp(t), dDVs=numpy.array(dDV))
                 us.append(us[-1] + du)
 
                 t_next_control += dt_control

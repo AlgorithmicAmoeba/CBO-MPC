@@ -61,6 +61,8 @@ class ModelPredictiveController:
 
         if dDVs is None:
             dDVs = numpy.full(self.SM.dvs * self.SM.M, 0)
+        else:
+            dDVs = dDVs.repeat(self.SM.M)
 
         if self.SM.dvs:
             self.dU = cvxpy.hstack([self.dMVs, dDVs])
