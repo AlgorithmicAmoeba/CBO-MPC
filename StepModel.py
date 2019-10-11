@@ -4,17 +4,17 @@ import utils
 
 
 class StepModel:
-    def __init__(self, G: utils.InternalDelay, dt, N, P, M, integrators=True, Ndv=0):
+    def __init__(self, G: utils.InternalDelay, dt, N, P, M, integrators=True, dvs=0):
         self.G = G
         self.dt = dt
         self.N = N
         self.P = P
         self.M = M
         self.integrators = integrators
-        self.Ndv = Ndv
+        self.dvs = dvs
 
         self.outs, self.ins = self.G.D11.shape
-        self.mvs = self.ins - self.Ndv
+        self.mvs = self.ins - self.dvs
 
         self.__make_step_coeffs()
         self.__make_step_matrix()
