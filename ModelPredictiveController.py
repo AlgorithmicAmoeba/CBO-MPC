@@ -4,13 +4,21 @@ import cvxpy
 
 
 class ModelPredictiveController:
-    def __init__(self, SM: StepModel.StepModel, Ysp=None, Q=None, R=None, dU_max=None, E_max=None):
+    def __init__(self, SM: StepModel.StepModel, Ysp=None, dDVs=None, Q=None, R=None, dU_max=None, E_max=None):
         self.SM = SM
-        self.dU = cvxpy.Variable(SM.M * SM.ins)
-        self.Y = SM.A @ self.dU
 
         if Ysp is None:
-            Ysp = numpy.full(SM.outs, 0)
+            Ysp = numpy.full(self.SM.outs, 0)
+
+        if dDVs is None:
+            dDVs = numpy.full(self.SM.dvs, 0)
+
+        self.dMVs = cvxpy.Variable(SM.M * SM.mvs)
+        if self.SM.dvs:
+            self.dU = cvxpy.hstack([self.dMVs, dDVs])
+        else:
+            self.dU = self.dMVs
+        self.Y = SM.A @ self.dU
 
         self.Ysp = Ysp.repeat(self.SM.P)
         self.E = self.Ysp - self.Y
@@ -45,10 +53,18 @@ class ModelPredictiveController:
 
         self.K = numpy.linalg.inv(SM.A.T @ self.Q @ SM.A + self.R) @ SM.A.T @ self.Q
 
-    def step(self, Y_actual, Ysp=None):
+    def step(self, Y_actual, Ysp=None, dDVs=None):
 
         if Ysp is not None:
             self.Ysp = Ysp.repeat(self.SM.P)
+
+        if dDVs is None:
+            dDVs = numpy.full(self.SM.dvs, 0)
+
+        if self.SM.dvs:
+            self.dU = cvxpy.hstack([self.dMVs, dDVs])
+        else:
+            self.dU = self.dMVs
 
         self.Y = self.SM.A @ self.dU + self.SM.Y0
         self.bias = numpy.repeat(Y_actual - self.Y.value[::self.SM.P], self.SM.P)
@@ -84,7 +100,7 @@ class ModelPredictiveController:
             self.prob.solve(**kwargs)
             if self.prob.solution.status == 'optimal':
                 print("It worked!")
-            dU_out = self.dU.value
+            dU_out = self.dMVs.value
             # E_f = self.Ysp - self.SM.Y0 - self.bias
             # dU_out = (self.K @ E_f)
 
