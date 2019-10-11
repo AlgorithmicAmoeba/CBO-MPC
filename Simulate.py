@@ -24,6 +24,7 @@ class SimulateMPC:
 
         # Step model
         self.SM = StepModel.StepModel(G, dt_model, N, P, M, integrators=integrators, dvs=dvs)
+        assert self.SM.ins >= self.dvs >= self.known_dvs
 
         # MPC
         self.MPC = ModelPredictiveController.ModelPredictiveController(self.SM, Q=Q, R=R)
