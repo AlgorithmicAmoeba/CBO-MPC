@@ -10,9 +10,9 @@ class ModelPredictiveController:
         self.Y = SM.A @ self.dU
 
         if Ysp is None:
-            Ysp = numpy.full(SM.P * SM.outs, 0)
+            Ysp = numpy.full(SM.outs, 0)
 
-        self.Ysp = Ysp
+        self.Ysp = Ysp.repeat(self.SM.P)
         self.E = self.Ysp - self.Y
 
         SM.reset()
@@ -48,7 +48,7 @@ class ModelPredictiveController:
     def step(self, Y_actual, Ysp=None):
 
         if Ysp is not None:
-            self.Ysp = Ysp
+            self.Ysp = Ysp.repeat(self.SM.P)
 
         self.Y = self.SM.A @ self.dU + self.SM.Y0
         self.bias = numpy.repeat(Y_actual - self.Y.value[::self.SM.P], self.SM.P)

@@ -47,7 +47,7 @@ class SimulateMPC:
 
         u_pm = list(us[-1]) + list(Udv(0))
         ys.append(self.PM.step(u_pm, dt_sim))
-        ysp.append(Ysp(0)[::self.P])
+        ysp.append(Ysp(0))
 
         if live_plot:
             plt.ion()
@@ -57,7 +57,7 @@ class SimulateMPC:
         for t in t_sim_iter:
             u_pm = list(us[-1]) + list(Udv(t))
             ys.append(self.PM.step(u_pm, dt_sim))
-            ysp.append(Ysp(t)[::self.P])
+            ysp.append(Ysp(t))
             if t > t_next_control:
                 du = self.MPC.step(ys[-1], Ysp(t))
                 us.append(us[-1] + du)

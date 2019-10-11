@@ -27,7 +27,7 @@ def Ysp_fun(t):
         ans = numpy.array([1, 0])
     else:
         ans = numpy.array([1, 1])
-    return ans.repeat(P)
+    return ans
 
 
 def Upm(t):
