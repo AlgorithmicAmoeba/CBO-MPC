@@ -23,7 +23,7 @@ class SimulateMPC:
         self.Ndv = Ndv
 
         # Step model
-        self.SM = StepModel.StepModel(G, dt_model, N, P, M, integrators=integrators)
+        self.SM = StepModel.StepModel(G, dt_model, N, P, M, integrators=integrators, dvs=1)
 
         # MPC
         self.MPC = ModelPredictiveController.ModelPredictiveController(self.SM, Q=Q, R=R)
@@ -38,16 +38,19 @@ class SimulateMPC:
         ys = []
         us = []
         ysp = []
+        dvs = []
 
         if dt_control is None:
             dt_control = self.dt_model
         t_next_control = dt_control
 
-        us.append(self.MPC.step([0] * self.SM.ins))
+        us.append(self.MPC.step([0] * self.SM.outs))
 
         u_pm = list(us[-1]) + list(Udv(0))
         ys.append(self.PM.step(u_pm, dt_sim))
         ysp.append(Ysp(0))
+        if self.SM.dvs:
+            dvs.append(Udv(0))
 
         if live_plot:
             plt.ion()
@@ -64,6 +67,9 @@ class SimulateMPC:
                 t_next_control += dt_control
             else:
                 us.append(us[-1])
+
+            if self.SM.dvs:
+                dvs.append(Udv(0))
 
             if live_plot:
                 t_sim_trunc = t_sim[t_sim <= t]
@@ -88,8 +94,13 @@ class SimulateMPC:
         if live_plot:
             plt.ioff()
 
-        data = numpy.concatenate([numpy.array(d) for d in [t_sim[:, numpy.newaxis], us, ys, ysp]], axis=1)
-        cols = ['ts'] + [f"{name}_{i+1}" for name in ['u', 'y', 'r'] for i in range(self.SM.ins)]
+        data = numpy.concatenate([numpy.array(d) for d in [t_sim[:, numpy.newaxis], us, dvs, ys, ysp]], axis=1)
+        cols = ['ts']
+        cols += [f"u_{i+1}"  for i in range(self.SM.mvs)]
+        cols += [f"dv_{i + 1}" for i in range(self.SM.dvs)]
+        cols += [f"y_{i + 1}" for i in range(self.SM.outs)]
+        cols += [f"r_{i + 1}" for i in range(self.SM.outs)]
+
         df = pandas.DataFrame(data, columns=cols)
 
         if save_data != '':
