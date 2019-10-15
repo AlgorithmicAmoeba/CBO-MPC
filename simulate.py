@@ -41,7 +41,7 @@ t_end = 200
 t_sim = numpy.linspace(0, t_end, t_end*10)
 
 sim = Simulate.SimulateMPC(G, N, M, P, dt_model, Q, R, dvs=1, known_dvs=1)
-df = sim.simulate(Ysp_fun, t_sim, Udv=Udv, save_data="test", live_plot=False)
 
 if __name__ == "__main__":
+    df = sim.simulate(Ysp_fun, t_sim, Udv=Udv, save_data="test", live_plot=False)
     Plotting.plot_all(df)
