@@ -114,3 +114,11 @@ class SimulateMPC:
             df.to_csv(save_data + '.csv', index=False)
 
         return df
+
+    def change_Q(self, Q):
+        self.Q = Q
+        self.MPC.Q = Q
+
+    def change_R(self, R):
+        self.R = R
+        self.MPC.R = R
