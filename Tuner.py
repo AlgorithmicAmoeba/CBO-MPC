@@ -32,4 +32,18 @@ class Tuner:
         ans = sum(integrals*self.weights)
         return ans
 
+    def IAE(self):
+        ts, es = self.get_errors()
+        E = abs(es)
+        integrals = scipy.integrate.trapz(E.T, ts)
+        ans = sum(integrals*self.weights)
+        return ans
+
+    def ITAE(self):
+        ts, es = self.get_errors()
+        E = abs(es)*ts[:, numpy.newaxis]
+        integrals = scipy.integrate.trapz(E.T, ts)
+        ans = sum(integrals*self.weights)
+        return ans
+
 
