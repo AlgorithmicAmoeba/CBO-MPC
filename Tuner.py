@@ -18,8 +18,8 @@ class Tuner:
 
     def get_errors(self):
         ts = self.df.ts
-        ys = self.df[self.df.columns.str.contains('y')].values
-        rs = self.df[self.df.columns.str.contains('r')].values
+        ys = self.df.loc[:, self.df.columns.str.contains('y')].values
+        rs = self.df.loc[:, self.df.columns.str.contains('r')].values
 
         es = ys - rs
 
