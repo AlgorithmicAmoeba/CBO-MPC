@@ -1,4 +1,5 @@
 import numpy
+import scipy.integrate
 import Simulate
 
 
@@ -14,16 +15,17 @@ class Tuner:
 
     def get_errors(self):
         ts = self.df.ts
-        us = self.df[self.df.columns.str.contains('u')].values
         ys = self.df[self.df.columns.str.contains('y')].values
         rs = self.df[self.df.columns.str.contains('r')].values
 
         es = ys - rs
 
-        return ts, es, us
+        return ts, es
 
     def ISE(self):
-        ts, es, us = self.get_errors()
-
+        ts, es = self.get_errors()
+        E = es**2
+        ans = scipy.integrate.trapz(E, ts)
+        return ans
 
 
