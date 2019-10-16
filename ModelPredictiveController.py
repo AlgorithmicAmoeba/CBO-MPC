@@ -87,7 +87,10 @@ class ModelPredictiveController:
 
         Parameters
         ----------
-        MV_actual
+        MV_actual : array_like
+            The current value of the outputs.
+            Used for constraint purposes
+
         Y_actual : array_like
             The current value of the outputs.
             Used to take into account model error and unmeasured disturbances
