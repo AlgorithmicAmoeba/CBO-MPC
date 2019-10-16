@@ -55,6 +55,27 @@ class ModelPredictiveController:
         self.K = numpy.linalg.inv(self.A4K.T @ self.Q @ self.A4K + self.R) @ self.A4K.T @ self.Q
 
     def step(self, Y_actual, Ysp=None, dDVs=None):
+        """
+        Calculates next receding horizon control action of the controller.
+
+        Parameters
+        ----------
+        Y_actual : array_like
+            The current value of the outputs.
+            Used to take into account model error and unmeasured disturbances
+
+        Ysp : array_like
+            The set points for the current control calculation.
+        dDVs : array_like
+            The changes in the DV's since the last iteration.
+            This holds information useful for known/measured DV's
+
+        Returns
+        -------
+            dU_out : array_like
+                The optimal changes in the inputs for this iteration
+
+        """
 
         if Ysp is not None:
             self.Ysp = Ysp.repeat(self.SM.P)
