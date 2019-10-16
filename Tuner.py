@@ -1,5 +1,6 @@
 import numpy
 import scipy.integrate
+import scipy.optimize
 import Simulate
 
 
@@ -46,4 +47,20 @@ class Tuner:
         ans = sum(integrals*self.weights)
         return ans
 
+    def tune(self, bounds, initial):
+        n_Qs, n_Rs = self.s.P*self.s.SM.outs, self.s.M*self.s.SM.mvs
+        n_vars = n_Qs + n_Rs
 
+        def obj(x):
+            x = abs(x)
+            x[x == 0] = 0.1
+            Q = numpy.diag(x[:n_Qs])
+            R = numpy.diag(x[n_Qs:])
+            print(x)
+            self.s.change_Q(Q)
+            self.s.change_R(R)
+            self.df = self.s.simulate(self.Ysp, self.t_sim, **self.sim_kwargs)
+            value = self.method()
+            print(value)
+            return value
+        return scipy.optimize.minimize(obj, initial, method="Nelder-Mead", options={'xatol': 0.01, 'fatol': 0.01})
