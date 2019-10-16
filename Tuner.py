@@ -63,5 +63,5 @@ class Tuner:
             value = self.method()
             print(value)
             return value
-        options = {'xatol': 0.01, 'fatol': 0.01}
+        options = {'xatol': 0.1, 'fatol': 0.1}
         return scipy.optimize.minimize(obj, initial, method="Nelder-Mead", options=options)
