@@ -10,8 +10,8 @@ import pandas
 
 class SimulateMPC:
     def __init__(self, G: utils.InternalDelay, N, M, P, dt_model,
-                 Q=None, R=None, integrators=True,
-                 dvs=0, known_dvs=0):
+                 Q=None, R=None, constraints=lambda mpc: [],
+                 integrators=True, dvs=0, known_dvs=0):
         self.G = G
         self.N = N
         self.M = M
@@ -19,6 +19,7 @@ class SimulateMPC:
         self.dt_model = dt_model
         self.Q = Q
         self.R = R
+        self.constraints = constraints
         self.dvs = dvs
         self.known_dvs = known_dvs
 

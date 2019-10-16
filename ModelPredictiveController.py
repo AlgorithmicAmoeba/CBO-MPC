@@ -26,10 +26,14 @@ class ModelPredictiveController:
         A 1d-array_like of the diagonal elements of the R tuning matrix.
         R tunes the importance of inputs in the control calculations
 
-    dU_max
-    E_max
+    constraints : callable
+        A function that takes in a `ModelPredictiveController` object
+        and returns A, a 1d array_like of constraints, that must be satisfied in the form:
+        A_i <= 0 for all i
     """
-    def __init__(self, SM: StepModel.StepModel, Ysp=None, dDVs=None, Q=None, R=None, dU_max=None, E_max=None):
+    def __init__(self, SM: StepModel.StepModel,
+                 Ysp=None, dDVs=None, Q=None, R=None,
+                 constraints=lambda mpc: [], MVs=None):
         self.SM = SM
 
         if Ysp is None:
@@ -65,9 +69,8 @@ class ModelPredictiveController:
         if dU_max is not None:
             self.cons.append(cvxpy.abs(self.dU) <= self.dU_max)
 
-        self.E_max = E_max
-        if E_max is not None:
-            self.cons.append(cvxpy.abs(self.E) <= self.E_max)
+        self.constraints = constraints
+        self.cons = self.constraints(self)
 
         self.J = cvxpy.quad_form(self.E, self.Q) + cvxpy.quad_form(self.dMVs, self.R)
         self.obj = cvxpy.Minimize(self.J)
@@ -79,7 +82,7 @@ class ModelPredictiveController:
         self.A4K = self.SM.A[:, :self.SM.M * self.SM.mvs]
         self.K = numpy.linalg.inv(self.A4K.T @ self.Q @ self.A4K + self.R) @ self.A4K.T @ self.Q
 
-    def step(self, Y_actual, Ysp=None, dDVs=None):
+    def step(self, Y_actual, MV_actual=None, Ysp=None, dDVs=None):
         """
         Calculates next receding horizon control action of the controller.
 
@@ -122,12 +125,7 @@ class ModelPredictiveController:
         self.E = self.Ysp - self.Y
         self.J = cvxpy.quad_form(self.E, self.Q) + cvxpy.quad_form(self.dMVs, self.R)
         self.obj = cvxpy.Minimize(self.J)
-        self.cons = []
-        if self.dU_max is not None:
-            self.cons.append(cvxpy.abs(self.dU) <= self.dU_max)
-
-        if self.E_max is not None:
-            self.cons.append(cvxpy.abs(self.E) <= self.E_max)
+        self.cons = self.constraints(self)
 
         kwargs = {'solver': 'OSQP', 'warm_start': True, 'parallel': True, 'qcp': True}
         try:
