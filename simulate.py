@@ -1,7 +1,9 @@
 import Simulate
 import Plotting
+import ModelPredictiveController
 import utils
 import numpy
+import cvxpy
 
 # Slightly adapted from  H/W assignment 9: includes DV
 num = [[[-0.045], [-0.048], [0.004]], [[-0.23], [0.55], [-0.65]]]
@@ -33,6 +35,19 @@ def Udv(t):
     return ans
 
 
+def constraints(MPC: ModelPredictiveController.ModelPredictiveController):
+    ans = []
+    # limit on Y
+    # v = numpy.full_like(MPC.E, 2)
+    # ans.append(cvxpy.abs(MPC.Y) <= v)
+
+    # limit on U
+    # v = numpy.full_like(MPC.dMVs, 20)
+    # ans.append(cvxpy.abs(MPC.MVs.repeat(MPC.SM.M) + MPC.dMVs) <= v)
+
+    return ans
+
+
 Q = numpy.append(numpy.full(P, 100), numpy.full(P, 100))
 R = numpy.append(numpy.full(M, 1), numpy.full(M, 1))
 
@@ -40,7 +55,7 @@ R = numpy.append(numpy.full(M, 1), numpy.full(M, 1))
 t_end = 200
 t_sim = numpy.linspace(0, t_end, t_end*10)
 
-sim = Simulate.SimulateMPC(G, N, M, P, dt_model, Q, R, dvs=1, known_dvs=0)
+sim = Simulate.SimulateMPC(G, N, M, P, dt_model, Q, R, dvs=1, known_dvs=0, constraints=constraints)
 
 if __name__ == "__main__":
     df = sim.simulate(Ysp_fun, t_sim, Udv=Udv, save_data="test", live_plot=False)
