@@ -47,15 +47,21 @@ class Tuner:
         ans = sum(integrals*self.weights)
         return ans
 
-    def tune(self, bounds, initial):
-        n_Qs, n_Rs = self.s.P*self.s.SM.outs, self.s.M*self.s.SM.mvs
-        n_vars = n_Qs + n_Rs
+    def tune(self, initial, simple_tune=False):
+        if simple_tune:
+            n_Qs, n_Rs = self.s.SM.outs, self.s.SM.mvs
+        else:
+            n_Qs, n_Rs = self.s.P*self.s.SM.outs, self.s.M*self.s.SM.mvs
 
         def obj(x):
             x = abs(x)
             x[x == 0] = 0.1
-            Q = numpy.diag(x[:n_Qs])
-            R = numpy.diag(x[n_Qs:])
+            if simple_tune:
+                Q = numpy.diag(numpy.repeat(x[:n_Qs], self.s.SM.P))
+                R = numpy.diag(numpy.repeat(x[n_Qs:], self.s.SM.M))
+            else:
+                Q = numpy.diag(x[:n_Qs])
+                R = numpy.diag(x[n_Qs:])
             print(x)
             self.s.change_Q(Q)
             self.s.change_R(R)
