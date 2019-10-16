@@ -28,7 +28,7 @@ class SimulateMPC:
         assert self.SM.ins >= self.dvs >= self.known_dvs
 
         # MPC
-        self.MPC = ModelPredictiveController.ModelPredictiveController(self.SM, Q=Q, R=R)
+        self.MPC = ModelPredictiveController.ModelPredictiveController(self.SM, Q=Q, R=R, constraints=self.constraints)
 
         # Plant model
         self.PM = PlantModel.PlantModel(G)
@@ -47,7 +47,7 @@ class SimulateMPC:
         t_next_control = dt_control
         dv_prev_control = numpy.zeros(self.dvs)
 
-        us.append(self.MPC.step([0] * self.SM.outs))
+        us.append(self.MPC.step(Y_actual=[0] * self.SM.outs, Ysp=Ysp(0)))
 
         u_pm = list(us[-1]) + list(Udv(0))
         ys.append(self.PM.step(u_pm, dt_sim))
@@ -68,7 +68,7 @@ class SimulateMPC:
             if t > t_next_control:
                 dDV = list(dv - dv_prev_control)[:self.known_dvs] + [0]*(self.dvs - self.known_dvs)
 
-                du = self.MPC.step(ys[-1], Ysp(t), dDVs=numpy.array(dDV))
+                du = self.MPC.step(Y_actual=ys[-1], Ysp=Ysp(t), MV_actual=us[-1], dDVs=numpy.array(dDV))
                 us.append(us[-1] + du)
 
                 t_next_control += dt_control

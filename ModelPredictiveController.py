@@ -64,10 +64,9 @@ class ModelPredictiveController:
 
         self.R = numpy.diag(R)
 
-        self.cons = []
-        self.dU_max = dU_max
-        if dU_max is not None:
-            self.cons.append(cvxpy.abs(self.dU) <= self.dU_max)
+        self.MVs = MVs
+        if MVs is None:
+            self.MVs = numpy.zeros(self.SM.mvs)
 
         self.constraints = constraints
         self.cons = self.constraints(self)
@@ -88,6 +87,7 @@ class ModelPredictiveController:
 
         Parameters
         ----------
+        MV_actual
         Y_actual : array_like
             The current value of the outputs.
             Used to take into account model error and unmeasured disturbances
@@ -104,6 +104,9 @@ class ModelPredictiveController:
                 The optimal changes in the inputs for this iteration
 
         """
+        self.MVs = MV_actual
+        if MV_actual is None:
+            self.MVs = numpy.zeros(self.SM.mvs)
 
         if Ysp is not None:
             self.Ysp = Ysp.repeat(self.SM.P)
