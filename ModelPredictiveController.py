@@ -4,6 +4,31 @@ import cvxpy
 
 
 class ModelPredictiveController:
+    """
+    This class contains the necessary code for an MPC controller.
+    Attributes
+    ----------
+    SM : StepModel.StepModel
+        The step model of the system that we want to control
+
+    Ysp : array_like
+        The default set points for control calculations
+
+    dDVs : array_like
+        The initial changes in the DV's.
+        This holds information useful for known/measured DV's
+
+    Q : array_like
+        A 1d-array_like of the diagonal elements of the Q tuning matrix.
+        Q tunes the importance of outputs in the control calculations
+
+    R : array_like
+        A 1d-array_like of the diagonal elements of the R tuning matrix.
+        R tunes the importance of inputs in the control calculations
+
+    dU_max
+    E_max
+    """
     def __init__(self, SM: StepModel.StepModel, Ysp=None, dDVs=None, Q=None, R=None, dU_max=None, E_max=None):
         self.SM = SM
 
