@@ -3,6 +3,28 @@ import numpy
 
 
 class PlantModel:
+    """Simulates a MIMO TF object that acts as the real system for the simulation
+
+    Parameters
+    ----------
+    G : utils.InternalDelay
+        A TF representation of the system
+
+    x0 : array_like, optional
+        The initial state of the system.
+        Will assume a vector of zeros if no value is given
+
+    Attributes
+    ----------
+    G : utils.InternalDelay
+        A TF representation of the system
+
+    x : array_like
+        The current state of the system
+
+    zs : 2d-array_like
+        The delays inputs to the `InternalDelay` object
+    """
     def __init__(self, G: utils.InternalDelay, x0=None):
         self.G = G
         if x0 is None:
@@ -11,19 +33,19 @@ class PlantModel:
         self.zs = []
 
     def step(self, u, dt):
-        """
-        Steps the response of the system to the input.
+        """Steps the response of the system to the input.
         Uses a Runge-Kutta delay integration routine.
-        Parameters:
-            u:      array_like
-                    The input to the system.
-            dt:     float
-                    A scalar indicating the time sincde the previous call
+        Parameters
+        ----------
+        u : array_like
+            The input to the system.
+        dt : float
+        A scalar indicating the time sincde the previous call
 
-        Returns:
-            y:      array_like
-                    The output from the system
-
+        Returns
+        -------
+        y : array_like
+            The output from the system
         """
 
         dtss = [int(numpy.round(delay / dt)) for delay in self.G.delays]
