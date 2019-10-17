@@ -47,7 +47,7 @@ class Tuner:
         ans = sum(integrals*self.weights)
         return ans
 
-    def tune(self, initial, simple_tune=False):
+    def tune(self, initial, bounds, simple_tune=False):
         if simple_tune:
             n_Qs, n_Rs = self.s.SM.outs, self.s.SM.mvs
         else:
@@ -69,5 +69,6 @@ class Tuner:
             value = self.method()
             print(value)
             return value
-        options = {'xatol': 0.1, 'fatol': 0.1}
-        return scipy.optimize.minimize(obj, initial, method="Nelder-Mead", options=options)
+
+        ans = scipy.optimize.minimize(obj, initial, bounds=bounds, method="SLSQP")
+        return ans  #
