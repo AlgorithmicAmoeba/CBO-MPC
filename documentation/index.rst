@@ -32,6 +32,7 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
    PlantModel
    ModelPredictiveController
    Simulate
+   Tuner
 
 .. raw:: latex
 
@@ -47,6 +48,9 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
 
     \section{Simulate}
     \lstinputlisting{../../../Simulate.py}
+
+    \section{Tuner}
+    \lstinputlisting{../../../Tuner.py}
 
 .. Delete this line until the * to generate index for your project: * :ref:`genindex`
 
