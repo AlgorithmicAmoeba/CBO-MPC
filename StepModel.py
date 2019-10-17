@@ -10,31 +10,31 @@ class StepModel:
     class for the TF representation.
 
     Parameters
-        ----------
-        G : utils.InternalDelay
+    ----------
+    G : utils.InternalDelay
         The Laplace TF model of the system
 
-        dt : float
-            The sampling time
+    dt : float
+        The sampling time
 
-        N : int
-            The number of sampling instances for the step response
+    N : int
+        The number of sampling instances for the step response
 
-        P : int
-            The number of sampling instants for the prediction horizon
+    P : int
+        The number of sampling instants for the prediction horizon
 
-        M : int
-            The number of sampling instants for the control horizon
+    M : int
+        The number of sampling instants for the control horizon
 
-        integrators : bool, optional
-            Should be `True` if there are integrators in the system.
-            Can be `True` even if there are no integrators.
-            Defaults to `True`
+    integrators : bool, optional
+        Should be `True` if there are integrators in the system.
+        Can be `True` even if there are no integrators.
+        Defaults to `True`
 
-        dvs : int, optional
-            The number of inputs that are disturbance variables.
-            The code assumes that the last `dvs` inputs are disturbance variables.
-            Defaults to 0
+    dvs : int, optional
+        The number of inputs that are disturbance variables.
+        The code assumes that the last `dvs` inputs are disturbance variables.
+        Defaults to 0
 
     Attributes
     -----------

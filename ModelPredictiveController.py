@@ -7,29 +7,32 @@ class ModelPredictiveController:
     """Runs an MPC controller.
 
     Parameters
-        ----------
-        SM : StepModel.StepModel
-            The step model of the system that we want to control
+    ----------
+    SM : StepModel.StepModel
+        The step model of the system that we want to control
 
-        Ysp : array_like
-            The default set points for control calculations
+    Ysp : array_like
+        The default set points for control calculations
 
-        dDVs : array_like
-            The initial changes in the DV's.
-            This holds information useful for known/measured DV's
+    dDVs : array_like
+        The initial changes in the DV's.
+        This holds information useful for known/measured DV's
 
-        Q : array_like
-            A 1d-array_like of the diagonal elements of the Q tuning matrix.
-            Q tunes the importance of outputs in the control calculations
+    Q : array_like, optional
+        A 1d-array_like of the diagonal elements of the Q tuning matrix.
+        Q tunes the importance of outputs in the control calculations.
+        Defaults to all ones
 
-        R : array_like
-            A 1d-array_like of the diagonal elements of the R tuning matrix.
-            R tunes the importance of inputs in the control calculations
+    R : array_like, optional
+        A 1d-array_like of the diagonal elements of the R tuning matrix.
+        R tunes the importance of inputs in the control calculations.
+        Defaults to all ones
 
-        constraints : callable
-            A function that takes in a `ModelPredictiveController` object
-            and returns A, a 1d array_like of constraints, that must be satisfied in the form:
-            A_i <= 0 for all i
+    constraints : callable, optional
+        A function that takes in a `ModelPredictiveController` object
+        and returns A, a 1d array_like of constraints, that must be satisfied in the form:
+        A_i <= 0 for all i
+        Defaults to no constraints
 
     Attributes
     ----------
