@@ -9,6 +9,107 @@ import pandas
 
 
 class SimulateMPC:
+    """Simulates the execution of an MPC controller on a system.
+
+    Parameters
+    ----------
+    G : utils.InternalDelay
+        The system to be controlled
+
+    N : int
+        The number of sampling instances for the step response
+
+    P : int
+        The number of sampling instants for the prediction horizon
+
+    M : int
+        The number of sampling instants for the control horizon
+
+    dt_model : float
+        Sampling time of the model
+
+    Q : array_like, optional
+        A 1d-array_like of the diagonal elements of the Q tuning matrix.
+        Q tunes the importance of outputs in the control calculations.
+        Defaults to all ones
+
+    R : array_like, optional
+        A 1d-array_like of the diagonal elements of the R tuning matrix.
+        R tunes the importance of inputs in the control calculations.
+        Defaults to all ones
+
+    constraints : callable, optional
+        A function that takes in a `ModelPredictiveController` object
+        and returns A, a 1d array_like of constraints, that must be satisfied in the form:
+        A_i <= 0 for all i
+        Defaults to no constraints
+
+    integrators : bool, optional
+        Should be `True` if there are integrators in the system.
+        Can be `True` even if there are no integrators.
+        Defaults to `True`
+
+    dvs : int, optional
+        The number of inputs that are disturbance variables.
+        The code assumes that the last `dvs` inputs are disturbance variables.
+        Defaults to 0
+
+    known_dvs : int, optional
+        The number of disturbance variables that are known/measured.
+        The code assumes that the first `known_dvs` inputs are measured disturbance variables.
+        Defaults to 0
+
+    Attributes
+    -----------
+    G : utils.InternalDelay
+        The system to be controlled
+
+    SM : StepModel.StepModel
+        The step model of the system
+
+    MPC : ModelPredictiveController.ModelPredictiveController
+        An MPC instance that will control the system
+
+    PM : PlantModel
+        The simulated plant that the controller acts on
+
+    N : int
+        The number of sampling instances for the step response
+
+    P : int
+        The number of sampling instants for the prediction horizon
+
+    M : int
+        The number of sampling instants for the control horizon
+
+    dt_model : float
+        Sampling time of the model
+
+    Q : 2d-array_like
+        A matrix containing the the Q tuning matrix.
+        Q tunes the importance of outputs in the control calculations
+
+    R : 2d-array_like
+        A matrix containing the the R tuning matrix.
+        R tunes the importance of inputs in the control calculations
+
+    constraints : callable
+        A function that takes in a `ModelPredictiveController` object
+        and returns A, a 1d array_like of constraints, that must be satisfied in the form:
+        A_i <= 0 for all i
+
+    integrators : bool
+        Should be `True` if there are integrators in the system.
+        Can be `True` even if there are no integrators.
+
+    dvs : int
+        The number of inputs that are disturbance variables.
+        The code assumes that the last `dvs` inputs are disturbance variables.
+
+    known_dvs : int
+        The number of disturbance variables that are known/measured.
+        The code assumes that the first `known_dvs` inputs are measured disturbance variables.
+    """
     def __init__(self, G: utils.InternalDelay, N, M, P, dt_model,
                  Q=None, R=None, constraints=lambda mpc: [],
                  integrators=True, dvs=0, known_dvs=0):
@@ -36,6 +137,42 @@ class SimulateMPC:
     def simulate(self, Ysp, t_sim,
                  dt_control=None, Udv=lambda t: [],
                  show_tqdm=True, live_plot=False, save_data=''):
+        """Runs a simulation of the closed loop system
+        Parameters
+        ----------
+        Ysp : callable
+            A function that takes one variable `t`, the current time and
+            returns an array_like of set points for the outputs
+
+        t_sim : array_like
+            The times at which the simulation runs
+
+        dt_control : float, optional
+            The period of the control calculations
+            Defaults to dt_model
+
+        Udv : callable, optional
+            A function that takes one variable `t`, the current time and
+            returns an array_like of values for the distrubance variables
+
+        show_tqdm : bool, optional
+            If `True` then tqdm.tqdm will be augmented over the main simulation loop.
+            Defaults to `True`
+
+        live_plot : bool, optional
+            If `True` then the graph of the simulation will be live as the results are calculated.
+            Defaults to `False`
+
+        save_data : string, optional
+            If the string is not empty, then the results from the simulation are
+            saved to an excel file with this name.
+            Defaults to an empty string
+
+        Returns
+        -------
+        df : pandas.DataFrame
+            A DataFrame object with the results of the simulation
+        """
         dt_sim = t_sim[1]
         ys = []
         us = []
@@ -117,9 +254,28 @@ class SimulateMPC:
         return df
 
     def change_Q(self, Q):
+        """Changes the value of the tuning parameter Q for this class
+        and it's internal MPC class
+
+        Parameters
+        ----------
+        Q : 2d-array_like
+            A matrix containing the the Q tuning matrix.
+            Q tunes the importance of outputs in the control calculations
+        """
         self.Q = Q
         self.MPC.Q = Q
 
     def change_R(self, R):
+        """
+        Changes the value of the tuning parameter R for this class
+        and it's internal MPC class
+
+        Parameters
+        ----------
+        R : 2d-array_like
+            A matrix containing the the R tuning matrix.
+            R tunes the importance of inputs in the control calculations
+        """
         self.R = R
         self.MPC.R = R
