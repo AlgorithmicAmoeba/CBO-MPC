@@ -71,4 +71,4 @@ class Tuner:
             return value
 
         ans = scipy.optimize.minimize(obj, initial, bounds=bounds, method="SLSQP")
-        return ans  #
+        return ans
