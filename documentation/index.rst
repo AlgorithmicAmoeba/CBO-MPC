@@ -29,15 +29,13 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
    :name: mastertoc
 
    StepModel
-   MPC
+   PlantModel
+   ModelPredictiveController
+
+.. raw:: latex
 
 
 .. Delete this line until the * to generate index for your project: * :ref:`genindex`
-
-
-|
-
-This documentation was last updated on |today|.
 
 .. Finished personalizing all the relevant details? Great! Now make this your main index.rst,
    And run `make clean html` from your documentation folder :)
