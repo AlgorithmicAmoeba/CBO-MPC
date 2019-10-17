@@ -33,6 +33,7 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
    ModelPredictiveController
    Simulate
    Tuner
+   Plotting
 
 .. raw:: latex
 
@@ -51,6 +52,9 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
 
     \section{Tuner}
     \lstinputlisting{../../../Tuner.py}
+
+    \section{Plotting}
+    \lstinputlisting{../../../Plotting.py}
 
 .. Delete this line until the * to generate index for your project: * :ref:`genindex`
 
