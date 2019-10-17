@@ -34,6 +34,9 @@ class ModelPredictiveController:
     def __init__(self, SM: StepModel.StepModel,
                  Ysp=None, dDVs=None, Q=None, R=None,
                  constraints=lambda mpc: [], MVs=None):
+        """
+        Initializes the class.
+        """
         self.SM = SM
 
         if Ysp is None:
