@@ -4,8 +4,8 @@ import cvxpy
 
 
 class ModelPredictiveController:
-    """
-    This class contains the necessary code for an MPC controller.
+    """This class contains the necessary code for an MPC controller.
+
     Attributes
     ----------
     SM : StepModel.StepModel
@@ -43,13 +43,12 @@ class ModelPredictiveController:
 
     K : 2d-array_like
         The DMC (unconstrained) analytical controller
-
     """
     def __init__(self, SM: StepModel.StepModel,
                  Ysp=None, dDVs=None, Q=None, R=None,
                  constraints=lambda mpc: [], MVs=None):
-        """
-        Initializes the class.
+        """Initializes the class.
+
         Parameters
         ----------
         SM : StepModel.StepModel
@@ -123,8 +122,7 @@ class ModelPredictiveController:
         self.K = numpy.linalg.inv(self.A4K.T @ self.Q @ self.A4K + self.R) @ self.A4K.T @ self.Q
 
     def step(self, Y_actual, MV_actual=None, Ysp=None, dDVs=None):
-        """
-        Calculates next receding horizon control action of the controller.
+        """Calculates next receding horizon control action of the controller.
 
         Parameters
         ----------
