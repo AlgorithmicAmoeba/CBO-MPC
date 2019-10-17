@@ -4,7 +4,72 @@ import utils
 
 
 class StepModel:
+    """ This class contains the code required to build and simulate step models
+    of Laplace transfer function systems. It also contains the ability to build the
+    matrices required for MPC simulation as described in Seborg. It makes use of the
+    `utils.InternalDelay` class for the TF representation.
+
+    Attributes
+    -----------
+    G : utils.InternalDelay
+        The Laplace TF model of the system
+
+    dt : float
+        The sampling time
+
+    N : int
+        The number of sampling instances for the step response
+
+    P : int
+        The number of sampling instants for the prediction horizon
+
+    M : int
+        The number of sampling instants for the control horizon
+
+    integrators : bool
+        Should be `True` if there are integrators in the system.
+        Can be `True` even if there are no integrators.
+
+    dvs : int
+        The number of inputs that are disturbance variables.
+        The code assumes that the last `dvs` inputs are disturbance variables.
+
+    outs, ins, mvs : int
+        The number of outputs, inputs (MV's and DV's) and disturbances
+
+    Y0 : array_like
+        The effect of previous inputs on the futrue outputs
+    """
     def __init__(self, G: utils.InternalDelay, dt, N, P, M, integrators=True, dvs=0):
+        """ Initialises the class
+
+        Parameters
+        ----------
+        G : utils.InternalDelay
+        The Laplace TF model of the system
+
+        dt : float
+            The sampling time
+
+        N : int
+            The number of sampling instances for the step response
+
+        P : int
+            The number of sampling instants for the prediction horizon
+
+        M : int
+            The number of sampling instants for the control horizon
+
+        integrators : bool, optional
+            Should be `True` if there are integrators in the system.
+            Can be `True` even if there are no integrators.
+            Defaults to `True`
+
+        dvs : int, optional
+            The number of inputs that are disturbance variables.
+            The code assumes that the last `dvs` inputs are disturbance variables.
+            Defaults to 0
+        """
         self.G = G
         self.dt = dt
         self.N = N
@@ -25,6 +90,13 @@ class StepModel:
         self._dU_old_tot = numpy.zeros(self.ins)
 
     def step_Y0(self, dU):
+        """Changes the value of Y0 based on the current inputs
+
+        Parameters
+        ----------
+        dU : array_like
+            Current change in inputs
+        """
         self._dUs.append(dU)
         dUs_dyn = numpy.array(self._dUs[-self.N:]).T.flatten()
         self._dU_old_tot += self._dUs[-self.N-1]
@@ -32,9 +104,11 @@ class StepModel:
         self.Y0 = self.C @ dUs_dyn + y_old_tot.repeat(self.P)
 
     def reset(self):
+        """Resets the class for next simulation"""
         self.Y0 = numpy.zeros(self.A.shape[0])
 
     def __make_step_coeffs(self):
+        """Private function that finds the step response coefficients from simulation"""
         t = (self.N+1) * self.dt
         ts = numpy.linspace(0, t, int(t * 100))
         t_step = numpy.arange(self.dt, t, self.dt)
@@ -58,6 +132,8 @@ class StepModel:
         self.y_steps = numpy.array(y_steps)
 
     def __make_step_matrix(self):
+        """Private function that builds the required matrix for MPC calculations
+        from the step response coefficients"""
         if self.P < self.N:
             cols = self.y_steps[:, :, :self.P]
         else:
@@ -72,6 +148,8 @@ class StepModel:
             self.A += self.B
 
     def __make_integrators_matrix(self):
+        """Private function that builds the required matrix for integrator calculations
+        from the step response coefficients"""
         dys = self.y_steps[:, :, -1] - self.y_steps[:, :, -2]
 
         if self.P < self.N:
@@ -91,12 +169,15 @@ class StepModel:
         self.B = numpy.block(Bs)
 
     def __make_Y0_matrix(self):
+        """Private function that builds the required matrix for Y0 calculations
+        from the step response coefficients"""
         rows = numpy.insert(self.y_steps[:, :, 1:], -1, self.y_steps[:, :, -1], axis=2)
         rows = numpy.flip(rows, axis=2)
         cols = numpy.repeat(self.y_steps[:, :, -1][:, :, numpy.newaxis], self.P, axis=2)
         self.C = self.__mimo_toeplitz(rows, cols)
 
     def __mimo_toeplitz(self, rows, cols):
+        """Private utility function that builds MIMO toeplitz matrices"""
         As = numpy.zeros_like(self.G.D11).tolist()
         assert isinstance(As, list)
 
