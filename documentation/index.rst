@@ -34,6 +34,15 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
 
 .. raw:: latex
 
+    \chapter{Code}
+    \section{Step Model}
+    \lstinputlisting{../../../StepModel.py}
+
+    \section{Plant Model}
+    \lstinputlisting{../../../PlantModel.py}
+
+    \section{Model Predictive Controller}
+    \lstinputlisting{../../../ModelPredictiveController.py}
 
 .. Delete this line until the * to generate index for your project: * :ref:`genindex`
 

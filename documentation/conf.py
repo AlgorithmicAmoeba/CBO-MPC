@@ -139,3 +139,16 @@ imgmath_latex_preamble = r'''
 
 
 # #CHNAGEME# Finished personalizing all the relevant details? Great! Now make this your main conf.py :)
+
+# Options for LaTeX
+latex_elements = {
+    "papersize": "letterpaper",
+    "pointsize": "10pt",
+    "figure_align": "htbp",
+    "preamble": r"""
+        \usepackage{listings}
+        \lstset{ 
+            language=Python,                 % the language of the code
+        }
+    """,
+}
