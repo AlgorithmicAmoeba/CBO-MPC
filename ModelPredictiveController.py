@@ -145,7 +145,6 @@ class ModelPredictiveController:
         -------
             dU_out : array_like
                 The optimal changes in the inputs for this iteration
-
         """
         self.MVs = MV_actual
         if MV_actual is None:

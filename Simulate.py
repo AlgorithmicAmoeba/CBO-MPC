@@ -138,6 +138,7 @@ class SimulateMPC:
                  dt_control=None, Udv=lambda t: [],
                  show_tqdm=True, live_plot=False, save_data=''):
         """Runs a simulation of the closed loop system
+
         Parameters
         ----------
         Ysp : callable
