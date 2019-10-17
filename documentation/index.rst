@@ -31,6 +31,7 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
    StepModel
    PlantModel
    ModelPredictiveController
+   Simulate
 
 .. raw:: latex
 
@@ -43,6 +44,9 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
 
     \section{Model Predictive Controller}
     \lstinputlisting{../../../ModelPredictiveController.py}
+
+    \section{Simulate}
+    \lstinputlisting{../../../Simulate.py}
 
 .. Delete this line until the * to generate index for your project: * :ref:`genindex`
 

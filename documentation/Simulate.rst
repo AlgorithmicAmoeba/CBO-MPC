@@ -1,0 +1,5 @@
+Simulate
+========================================
+|
+
+.. autoclass:: Simulate.SimulateMPC
