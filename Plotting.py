@@ -3,6 +3,17 @@ import numpy
 
 
 def plot_all(df, show=True):
+    """Plots the inputs, outputs and references of a simulation in one graph
+
+    Parameters
+    ----------
+    df : pandas.Dataframe
+        A DataFrame object with the results of the simulation
+
+    show : bool, optional
+        If `True` then the `plt.show` method is called
+        Defaults to `True`
+    """
     ts = df.ts
     us_names = df.columns[df.columns.str.contains('u')].values.tolist()
     ys_names = df.columns[df.columns.str.contains('y')].values.tolist()
