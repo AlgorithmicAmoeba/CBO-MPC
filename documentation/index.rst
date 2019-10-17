@@ -28,6 +28,7 @@ The source code is available `here <https://github.com/darren-roos/CBO-MPC>`_.
    :maxdepth: 1
    :name: mastertoc
 
+   StepModel
    MPC
 
 
