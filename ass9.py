@@ -69,10 +69,10 @@ if tune:
     bounds = [(1, 1000)] * len(initial)
 
     a = datetime.datetime.now()
-    ans = tuner.tune(initial, bounds, simple_tune=True)
+    result = tuner.tune(initial, bounds, simple_tune=True)
     b = datetime.datetime.now()
     print("Total time: ", b - a)
-    print(ans)
+    print(result)
 else:
     df = sim.simulate(Ysp_fun, t_sim, Udv=Udv, save_data="test", live_plot=False)
     Plotting.plot_all(df)
