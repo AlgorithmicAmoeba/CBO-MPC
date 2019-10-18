@@ -121,6 +121,7 @@ class ModelPredictiveController:
 
         self.A4K = self.SM.A[:, :self.SM.M * self.SM.mvs]
         self.K = numpy.linalg.inv(self.A4K.T @ self.Q @ self.A4K + self.R) @ self.A4K.T @ self.Q
+        self.Y_old = self.SM.A @ self.dU + self.SM.Y0
 
     def step(self, Y_actual, MV_actual=None, Ysp=None, dDVs=None):
         """Calculates next receding horizon control action of the controller.
@@ -163,7 +164,7 @@ class ModelPredictiveController:
         else:
             self.dU = self.dMVs
 
-        self.Y = self.SM.A @ self.dU + self.SM.Y0
+        self.Y = self.Y_old
         self.bias = numpy.repeat(Y_actual - self.Y.value[::self.SM.P], self.SM.P)
 
         self.Y = self.SM.A @ self.dU + self.SM.Y0 + self.bias
@@ -197,5 +198,6 @@ class ModelPredictiveController:
             # dU_out = (self.K @ E_f)
 
         self.SM.step_Y0(self.dU.value[::self.SM.M])
+        self.Y_old = self.Y - self.bias
 
         return dU_out[::self.SM.M]
