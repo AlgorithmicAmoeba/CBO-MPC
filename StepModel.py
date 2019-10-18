@@ -108,7 +108,7 @@ class StepModel:
     def __make_step_coeffs(self):
         """Private function that finds the step response coefficients from simulation"""
         t = (self.N+1) * self.dt
-        ts = numpy.linspace(0, t, int(t * 100))
+        ts = numpy.linspace(0, t, int(t * 10))
         t_step = numpy.arange(self.dt, t, self.dt)
         ind = numpy.searchsorted(ts, t_step)
         y_steps = numpy.zeros_like(self.G.D11).tolist()
