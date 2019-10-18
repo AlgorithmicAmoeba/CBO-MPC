@@ -13,7 +13,7 @@ G = utils.InternalDelay.from_tf_coefficients(num, den, delay)
 
 # Parameters
 T = 70
-dt_model = 1
+dt_model = 4
 N = int(T/dt_model)
 M = 2
 P = 4
@@ -48,8 +48,8 @@ def constraints(MPC: ModelPredictiveController.ModelPredictiveController):
     return ans
 
 
-Q = numpy.append(numpy.full(P, 100), numpy.full(P, 107))
-R = numpy.append(numpy.full(M, 1), numpy.full(M, 1.08))
+Q = numpy.append(numpy.full(P, 101.6), numpy.full(P, 100.6))
+R = numpy.append(numpy.full(M, 5e-2), numpy.full(M, 5e-5))
 
 
 # Simulation setup
