@@ -70,15 +70,4 @@ else:
     df = sim.simulate(Ysp_fun, t_sim, save_data="test", live_plot=False)
     Plotting.plot_all(df)
 
-# tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, error_method="ISE")
-#
-# initial = [1, 1, 0.1, 4, 4, 4]
-#
-# bounds = [(0.1, 10)]*len(initial)
-#
-# a = datetime.datetime.now()
-# ans = tuner.tune(initial, bounds, simple_tune=True)
-# b = datetime.datetime.now()
-# print("Total time: ", b - a)
-# print(ans)
 

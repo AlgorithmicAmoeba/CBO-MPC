@@ -1,8 +1,10 @@
 import Simulate
 import Plotting
+import Tuner
 import ModelPredictiveController
 import utils
 import numpy
+import datetime
 import cvxpy
 
 # Slightly adapted from  H/W assignment 9: includes DV
@@ -58,6 +60,19 @@ t_sim = numpy.linspace(0, t_end, t_end*10)
 
 sim = Simulate.SimulateMPC(G, N, M, P, dt_model, Q, R, dvs=1, known_dvs=0, constraints=constraints)
 
-if __name__ == "__main__":
+tune = False
+if tune:
+    tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, Udv=Udv, error_method="ISE")
+
+    initial = [100, 100, 5, 5]
+
+    bounds = [(1, 1000)] * len(initial)
+
+    a = datetime.datetime.now()
+    ans = tuner.tune(initial, bounds, simple_tune=True)
+    b = datetime.datetime.now()
+    print("Total time: ", b - a)
+    print(ans)
+else:
     df = sim.simulate(Ysp_fun, t_sim, Udv=Udv, save_data="test", live_plot=False)
     Plotting.plot_all(df)
