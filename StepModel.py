@@ -153,7 +153,7 @@ class StepModel:
         if self.P < self.N:
             cols = numpy.zeros((self.outs, self.ins, self.P))
         else:
-            a = numpy.tile(numpy.arange(1, self.P - self.N + 1), (2, 2, 1))
+            a = numpy.tile(numpy.arange(1, self.P - self.N + 1), (self.outs, self.ins, 1))
             cols = numpy.append(numpy.zeros((self.outs, self.ins, self.N)), a, axis=2)
         rows = numpy.zeros((self.outs, self.ins, self.M))
 
