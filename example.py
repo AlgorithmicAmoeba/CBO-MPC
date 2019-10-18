@@ -52,9 +52,23 @@ t_end = 300
 t_sim = numpy.linspace(0, t_end, t_end*10)
 
 sim = Simulate.SimulateMPC(G, N, M, P, dt_model, Q, R)
+tune = False
 
-df = sim.simulate(Ysp_fun, t_sim, save_data="test", live_plot=False)
-Plotting.plot_all(df)
+if tune:
+    tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, error_method="ISE")
+
+    initial = [5, 4.96, 2.91, 1e-3, 2.4e-2, 0.98]
+
+    bounds = [(1e-4, 100)]*len(initial)
+
+    a = datetime.datetime.now()
+    ans = tuner.tune(initial, bounds, simple_tune=True)
+    b = datetime.datetime.now()
+    print("Total time: ", b - a)
+    print(ans)
+else:
+    df = sim.simulate(Ysp_fun, t_sim, save_data="test", live_plot=False)
+    Plotting.plot_all(df)
 
 # tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, error_method="ISE")
 #
