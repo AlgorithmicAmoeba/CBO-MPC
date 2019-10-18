@@ -44,9 +44,8 @@ def constraints(MPC: ModelPredictiveController.ModelPredictiveController):
     return ans
 
 
-Q = numpy.concatenate([numpy.full(P, 1), numpy.full(P, 1), numpy.full(P, 1)])
-# R = numpy.concatenate([numpy.full(M, 2), numpy.full(M, 2), numpy.full(M, 8)])
-R = numpy.concatenate([numpy.full(M, 1), numpy.full(M, 1), numpy.full(M, 1)])
+Q = numpy.concatenate([numpy.full(P, 0.513), numpy.full(P, 3.25), numpy.full(P, 2.37)])
+R = numpy.concatenate([numpy.full(M, 0.468), numpy.full(M, 0.406), numpy.full(M, 0.036)])
 
 # Simulation setup
 t_end = 300
