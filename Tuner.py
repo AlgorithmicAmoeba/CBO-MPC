@@ -169,5 +169,5 @@ class Tuner:
             print(value)
             return value
 
-        ans = scipy.optimize.minimize(obj, initial, bounds=bounds, method="SLSQP").x
+        ans = scipy.optimize.minimize(obj, initial, bounds=bounds, method="COBYLA")
         return ans
