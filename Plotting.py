@@ -25,10 +25,11 @@ def plot_all(df, show=True):
 
     plt.subplot(2, 1, 1)
     plt.plot(ts, ys, '-')
+    plt.gca().set_prop_cycle(None)
     plt.plot(ts, rs, '--')
     plt.xlim(numpy.min(ts), numpy.max(ts))
     plt.ylim([numpy.min(ys) - numpy.std(ys), numpy.max(ys) + numpy.std(ys)])
-    plt.legend([rf"${name}$" for name in ys_names + rs_names])
+    plt.legend([rf"${name}$" for name in ys_names])
 
     plt.subplot(2, 1, 2)
     plt.plot(ts, us, '-')
