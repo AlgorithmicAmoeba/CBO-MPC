@@ -199,7 +199,7 @@ class SimulateMPC:
         # Simulate
         t_sim_iter = tqdm.tqdm(t_sim[1:]) if show_tqdm else t_sim[1:]
         for t in t_sim_iter:
-            dv = Udv(t)
+            dv = numpy.array(Udv(t))
             u_pm = list(us[-1]) + list(dv)
             ys.append(self.PM.step(u_pm, dt_sim))
             ysp.append(Ysp(t))
@@ -240,10 +240,16 @@ class SimulateMPC:
         if live_plot:
             plt.ioff()
 
-        data = numpy.concatenate([numpy.array(d) for d in [t_sim[:, numpy.newaxis], us, dvs, ys, ysp]], axis=1)
+        if self.dvs:
+            data_arrays = [t_sim[:, numpy.newaxis], us, dvs, ys, ysp]
+        else:
+            data_arrays = [t_sim[:, numpy.newaxis], us, ys, ysp]
+
+        data = numpy.concatenate([numpy.array(d) for d in data_arrays], axis=1)
         cols = ['ts']
         cols += [f"u_{i+1}" for i in range(self.SM.mvs)]
-        cols += [f"dv_{i + 1}" for i in range(self.SM.dvs)]
+        if self.dvs:
+            cols += [f"dv_{i + 1}" for i in range(self.SM.dvs)]
         cols += [f"y_{i + 1}" for i in range(self.SM.outs)]
         cols += [f"r_{i + 1}" for i in range(self.SM.outs)]
 
