@@ -8,9 +8,17 @@ import datetime
 import cvxpy
 
 # Shell Heavy Oil system
-num = [[[4.05], [1.77], [5.88]], [[5.39], [5.72], [6.90]], [[4.38], [4.42], [7.20]]]
-den = [[[50, 1], [60, 1], [50, 1]], [[50, 1], [60, 1], [40, 1]], [[33, 1], [44, 1], [19, 1]]]
-delay = [[27, 28, 27], [18, 14, 15], [20, 22, 0]]
+num = [[[4.05], [1.77], [5.88], [1.20], [1.44]],
+       [[5.39], [5.72], [6.90], [1.52], [1.83]],
+       [[4.38], [4.42], [7.20], [1.14], [1.26]]]
+
+den = [[[50, 1], [60, 1], [50, 1], [45, 1], [40, 1]],
+       [[50, 1], [60, 1], [40, 1], [25, 1], [20, 1]],
+       [[33, 1], [44, 1], [19, 1], [27, 1], [32, 1]]]
+
+delay = [[27, 28, 27, 27, 27],
+         [18, 14, 15, 15, 15],
+         [20, 22, 0, 0, 0]]
 G = utils.InternalDelay.from_tf_coefficients(num, den, delay)
 
 # Parameters
@@ -28,6 +36,14 @@ def Ysp_fun(t):
         ans = numpy.array([1, 1, 0])
     else:
         ans = numpy.array([1, 1, 1])
+    return ans
+
+
+def Udv(t):
+    if t < 100:
+        ans = numpy.array([0, 0])
+    else:
+        ans = numpy.array([0, 0])
     return ans
 
 
@@ -51,11 +67,11 @@ R = numpy.concatenate([numpy.full(M, 0.468), numpy.full(M, 0.406), numpy.full(M,
 t_end = 300
 t_sim = numpy.linspace(0, t_end, t_end*10)
 
-sim = Simulate.SimulateMPC(G, N, M, P, dt_model, Q, R)
+sim = Simulate.SimulateMPC(G, N, M, P, dt_model, Q, R, dvs=2, known_dvs=1)
 tune = False
 
 if tune:
-    tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, error_method="ISE")
+    tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, error_method="ISE", )
 
     initial = [5, 4.96, 2.91, 1e-3, 2.4e-2, 0.98]
 
@@ -67,5 +83,5 @@ if tune:
     print("Total time: ", b - a)
     print(result)
 else:
-    df = sim.simulate(Ysp_fun, t_sim, save_data="test", live_plot=False)
+    df = sim.simulate(Ysp_fun, t_sim, save_data="test", live_plot=False, Udv=Udv)
     Plotting.plot_all(df)
