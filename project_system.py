@@ -7,7 +7,7 @@ import numpy
 import datetime
 import cvxpy
 
-# Slightly adapted from  H/W assignment 9: includes DV
+# Shell Heavy Oil system
 num = [[[4.05], [1.77], [5.88]], [[5.39], [5.72], [6.90]], [[4.38], [4.42], [7.20]]]
 den = [[[50, 1], [60, 1], [50, 1]], [[50, 1], [60, 1], [40, 1]], [[33, 1], [44, 1], [19, 1]]]
 delay = [[27, 28, 27], [18, 14, 15], [20, 22, 0]]
