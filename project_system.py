@@ -26,7 +26,7 @@ T = 300
 dt_model = 10
 N = int(T/dt_model)
 M = 13
-P = N+M
+P = N + M
 
 
 def Ysp_fun(t):
@@ -40,10 +40,12 @@ def Ysp_fun(t):
 
 
 def Udv(t):
-    if t < 100:
+    if t < 300:
         ans = numpy.array([0, 0])
+    elif t < 400:
+        ans = numpy.array([1, 0])
     else:
-        ans = numpy.array([0, 0])
+        ans = numpy.array([1, 1])
     return ans
 
 
@@ -64,18 +66,18 @@ Q = numpy.concatenate([numpy.full(P, 0.513), numpy.full(P, 3.25), numpy.full(P, 
 R = numpy.concatenate([numpy.full(M, 0.468), numpy.full(M, 0.406), numpy.full(M, 0.036)])
 
 # Simulation setup
-t_end = 300
+t_end = 600
 t_sim = numpy.linspace(0, t_end, t_end*10)
 
 sim = Simulate.SimulateMPC(G, N, M, P, dt_model, Q, R, dvs=2, known_dvs=1)
 tune = False
 
 if tune:
-    tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, error_method="ISE", )
+    tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, error_method="ISE", Udv=Udv)
 
-    initial = [5, 4.96, 2.91, 1e-3, 2.4e-2, 0.98]
+    initial = [9, 5, 0.1, 1e-8, 1e-8, 1e-8]
 
-    bounds = [(1e-4, 100)]*len(initial)
+    bounds = [(1e-12, 100)]*len(initial)
 
     a = datetime.datetime.now()
     result = tuner.tune(initial, bounds, simple_tune=True)
@@ -83,5 +85,5 @@ if tune:
     print("Total time: ", b - a)
     print(result)
 else:
-    df = sim.simulate(Ysp_fun, t_sim, save_data="test", live_plot=False, Udv=Udv)
-    Plotting.plot_all(df)
+    df = sim.simulate(Ysp_fun, t_sim, save_data="data/temp", live_plot=False, Udv=Udv)
+    Plotting.plot_all(df, save_figure='data/temp.pdf')
