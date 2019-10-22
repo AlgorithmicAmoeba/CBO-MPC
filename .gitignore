@@ -4,3 +4,4 @@ venv/
 *.csv
 .ipynb_checkpoints/
 documentation/_build
+data/
