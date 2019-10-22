@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy
 
 
-def plot_all(df, show=True):
+def plot_all(df, show=True, save_figure=''):
     """Plots the inputs, outputs and references of a simulation in one graph
 
     Parameters
@@ -13,6 +13,10 @@ def plot_all(df, show=True):
     show : bool, optional
         If `True` then the `plt.show` method is called
         Defaults to `True`
+        
+    save_figure : string, optional
+        If there is a non-empty string then the `plt.savefig` method is called
+        Defaults to empty string
     """
     ts = df.ts
     us_names = df.columns[df.columns.str.contains('u')].values.tolist()
@@ -36,6 +40,9 @@ def plot_all(df, show=True):
     plt.xlim(numpy.min(ts), numpy.max(ts))
     plt.ylim([numpy.min(us) - numpy.std(us), numpy.max(us) + numpy.std(us)])
     plt.legend([rf"${name}$" for name in us_names])
+
+    if save_figure:
+        plt.savefig(save_figure)
 
     if show:
         plt.show()
