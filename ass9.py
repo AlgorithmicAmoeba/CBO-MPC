@@ -17,15 +17,15 @@ G = utils.InternalDelay.from_tf_coefficients(num, den, delay)
 T = 70
 dt_model = 4
 N = int(T/dt_model)
-M = 2
-P = 4
+M = 8
+P = N + M
 
 
 def Ysp_fun(t):
     if t < 50:
-        ans = numpy.array([1, 0])
+        ans = numpy.array([-2, 0])
     else:
-        ans = numpy.array([1, 1])
+        ans = numpy.array([-2, 3])
     return ans
 
 
@@ -33,7 +33,7 @@ def Udv(t):
     if t < 100:
         ans = numpy.array([0])
     else:
-        ans = numpy.array([10])
+        ans = numpy.array([5])
     return ans
 
 
@@ -44,14 +44,21 @@ def constraints(MPC: ModelPredictiveController.ModelPredictiveController):
     # ans.append(cvxpy.abs(MPC.Y) <= v)
 
     # limit on U
-    # v = numpy.full_like(MPC.dMVs, 20)
-    # ans.append(cvxpy.abs(MPC.MVs.repeat(MPC.SM.M) + MPC.dMVs) <= v)
+    N_mv = int(MPC.dMVs.shape[0]/2)
+    v = numpy.concatenate([numpy.full(N_mv, 30), numpy.full(N_mv, 22)])
+    ans.append(cvxpy.abs(MPC.MVs.repeat(MPC.SM.M) + MPC.dMVs) <= v)
+
+    # limit on dU
+    v = numpy.full_like(MPC.dMVs, 5)
+    ans.append(cvxpy.abs(MPC.dMVs) <= v)
 
     return ans
 
 
 Q = numpy.append(numpy.full(P, 101.6), numpy.full(P, 100.6))
 R = numpy.append(numpy.full(M, 5e-2), numpy.full(M, 5e-5))
+# Q = numpy.append(numpy.full(P, 1), numpy.full(P, 1))
+# R = numpy.append(numpy.full(M, 1), numpy.full(M, 1))
 
 
 # Simulation setup
@@ -74,5 +81,21 @@ if tune:
     print("Total time: ", b - a)
     print(result)
 else:
-    df = sim.simulate(Ysp_fun, t_sim, Udv=Udv, save_data="test", live_plot=False)
-    Plotting.plot_all(df)
+    df = sim.simulate(Ysp_fun, t_sim, Udv=Udv, save_data="data/cons", live_plot=False)
+
+    tuner = Tuner.Tuner(sim, Ysp_fun, t_sim, Udv=Udv, error_method="ISE")
+    tuner.df = df
+    print(tuner.ISE())
+
+    Plotting.plot_all(df, show=False)
+    import matplotlib.pyplot as plt
+
+    plt.subplot(2, 1, 1)
+    plt.legend([r"$T_4$", r"$T_{14}$"])
+
+    plt.subplot(2, 1, 2)
+    plt.plot(df.ts, df.dv_1, '--')
+    plt.legend([r"$F_R$", r"$F_S$", r"$X_F$"])
+    plt.ylim(ymin=0)
+    plt.savefig("data/cons")
+    plt.show()
