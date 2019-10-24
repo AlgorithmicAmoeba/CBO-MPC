@@ -66,7 +66,7 @@ class Tuner:
             self.weights = numpy.ones(self.simulation.SM.outs)
         self.simulation_options = simulation_options
 
-        self.df = self.simulation.simulate(self.Ysp, t_sim, **simulation_options)
+        self.df = None
 
     def get_errors(self):
         """Calculate the errors of the most recent simulation
