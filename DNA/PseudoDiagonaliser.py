@@ -90,9 +90,10 @@ class PseudoDiagonaliser:
         fs = numpy.abs([self.G(1j * w) @ fun(1j * w) for i, w in enumerate(self.ws)])
 
         # Now need to calculate the row diagonal dominance
-        diagonals = numpy.array([numpy.diag(f) for f in fs])
-        off_diagonals_sum = numpy.sum(fs, axis=ax) - diagonals
-        biggest = numpy.max(off_diagonals_sum / diagonals)
+        diags = numpy.array([numpy.diag(f) for f in fs])
+        diags_abs = numpy.abs(diags)
+        offdiag_sum_abs = numpy.sum(numpy.abs(fs), axis=ax) - diags_abs
+        biggest = numpy.max(offdiag_sum_abs / diags_abs)
         if self.show:
             print(biggest)
 
