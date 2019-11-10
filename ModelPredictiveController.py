@@ -179,20 +179,21 @@ class ModelPredictiveController:
             self.prob.solve(**kwargs)
             dU_out = self.dMVs.value
         except cvxpy.error.SolverError:
-            print(self.prob.status)
+            # print(self.prob.status)
             self.prob = cvxpy.Problem(self.obj)
-            self.prob.solve(verbose=True, **kwargs)
+            self.prob.solve( **kwargs)
             dU_out = self.dMVs.value
             # E_f = self.Ysp - self.SM.Y0 - self.bias
             # dU_out = (self.K @ E_f)
 
         if self.prob.solution is None or self.prob.solution.status != 'optimal':
             # print("Status: " + self.prob.solution.status)
-            print("Solving problem without constraints")
+            # print("Solving problem without constraints")
             self.prob = cvxpy.Problem(self.obj)
             self.prob.solve(**kwargs)
             if self.prob.solution.status == 'optimal':
-                print("It worked!")
+                pass
+                # print("It worked!")
             dU_out = self.dMVs.value
             # E_f = self.Ysp - self.SM.Y0 - self.bias
             # dU_out = (self.K @ E_f)
@@ -201,3 +202,6 @@ class ModelPredictiveController:
         self.Y_old = self.Y - self.bias
 
         return dU_out[::self.SM.M]
+
+    def reset(self):
+        self.Y_old = self.SM.A @ self.dU + self.SM.Y0

@@ -180,6 +180,10 @@ class SimulateMPC:
         ysp = []
         dvs = []
 
+        self.SM.reset()
+        self.MPC.reset()
+        self.PM.reset()
+
         if dt_control is None:
             dt_control = self.dt_model
         t_next_control = dt_control

@@ -81,3 +81,7 @@ class PlantModel:
         self.x = [xi + dxi for xi, dxi in zip(self.x, dx)]
 
         return y
+
+    def reset(self):
+        self.x = numpy.zeros(self.G.A.shape[0])
+        self.zs = []

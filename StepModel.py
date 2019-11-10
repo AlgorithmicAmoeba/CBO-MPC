@@ -104,12 +104,16 @@ class StepModel:
     def reset(self):
         """Resets the class for next simulation"""
         self.Y0 = numpy.zeros(self.A.shape[0])
+        self._dUs = [numpy.zeros(self.ins)] * self.N
+        self._dU_old_tot = numpy.zeros(self.ins)
 
     def __make_step_coeffs(self):
         """Private function that finds the step response coefficients from simulation"""
         t = (self.N+1) * self.dt
         ts = numpy.linspace(0, t, int(t * 10))
         t_step = numpy.arange(self.dt, t, self.dt)
+        if len(t_step) > self.N:
+            t_step = t_step[:-1]
         ind = numpy.searchsorted(ts, t_step)
         y_steps = numpy.zeros_like(self.G.D11).tolist()
         assert isinstance(y_steps, list)
